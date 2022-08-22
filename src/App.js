@@ -16,6 +16,35 @@ export default function App() {
   },[])
 
   React.useEffect(() => {
+    function isGameDraw(){
+      return gameBoard.every(rows => rows.every(item => item !== 0))
+    }
+  
+    function isPlayerWon(){
+      let isWon = false
+      let col1 = [], col2 = [], col3 = []
+      let row1 = gameBoard[0], row2 = gameBoard[1], row3 = gameBoard[2]
+      let dia1 = [], dia2 = []
+      let startCounter = 0, endCounter = 2
+  
+      gameBoard.map(rows => {
+        col1.push(rows[0]) 
+        col2.push(rows[1])
+        col3.push(rows[2])
+        dia1.push(rows[startCounter])
+        dia2.push(rows[endCounter])
+        startCounter += 1
+        endCounter -= 1
+        return null
+      })
+  
+      isWon = compareVals(row1) || compareVals(row2) || compareVals(row3)
+          ||  compareVals(col1) || compareVals(col2) || compareVals(col3)
+          ||  compareVals(dia1) || compareVals(dia2)
+  
+      return isWon
+    }
+
     if(isPlayerWon()){
       setIsWon(true)
       setIsPlayerOne(oldPlayer => !oldPlayer)
@@ -34,35 +63,10 @@ export default function App() {
     return arr.every(item => arr[0] === item && item !== 0)
   }
 
-  function isGameDraw(){
-    return gameBoard.every(rows => rows.every(item => item !== 0))
-  }
-
-  function isPlayerWon(){
-    let isWon = false
-    let col1 = [], col2 = [], col3 = []
-    let row1 = gameBoard[0], row2 = gameBoard[1], row3 = gameBoard[2]
-    let dia1 = [], dia2 = []
-    let startCounter = 0, endCounter = 2
-
-    gameBoard.map(rows => {
-      col1.push(rows[0]) 
-      col2.push(rows[1])
-      col3.push(rows[2])
-      dia1.push(rows[startCounter])
-      dia2.push(rows[endCounter])
-      startCounter += 1
-      endCounter -= 1
-    })
-
-    isWon = compareVals(row1) || compareVals(row2) || compareVals(row3)
-        ||  compareVals(col1) || compareVals(col2) || compareVals(col3)
-        ||  compareVals(dia1) || compareVals(dia2)
-
-    return isWon
-  }
-
   function playTurn(rowIndx, itemIndx, identifier){
+    if(isWon || isDraw)
+      return
+
     let isNext = false
     const newBoard = gameBoard.map((rows, rowIndex) =>
       rowIndex === rowIndx 
@@ -82,12 +86,15 @@ export default function App() {
   }
 
   return (
+    <div className='tictactoe'>
+      {isWon && <div className='status'><span>Player {isPlayerOne ? 1 : 2} Won!</span></div>}
+      {isDraw && <div className='status'><span>Draw!</span></div>}
       <TicTacToe players={players}
                  gameBoard={gameBoard}
-                 isWon={isWon} 
-                 isDraw={isDraw} 
                  isPlayerOne={isPlayerOne} 
                  playTurn={playTurn}/>
+      <div className='status'><span>Player {isPlayerOne ? 1 : 2}'s turn</span></div>
+    </div>
   );
 }
 

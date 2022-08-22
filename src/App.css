@@ -1,7 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=DynaPuff:wght@400;500;700&display=swap');
+
 .tictactoe{
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 40px;
+    align-items: center;
     margin-top: 100px;
+    font-family: 'DynaPuff', cursive;
 }
 
 .grid-container {
@@ -31,3 +36,23 @@
     border-radius: 50%;
 }
 
+.status {
+    width: fit-content;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status span{
+    font-size: 100%;
+    font-weight: 900;
+    color: #252525;
+}
+
+.status:first-child{
+    position: absolute;
+    margin-top: -80px;
+}
