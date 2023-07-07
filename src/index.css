@@ -1,0 +1,53 @@
+:root{
+  --border: 0.2rem solid #d1d1d1;
+  --color: red;
+  --border-size: 9rem;
+}
+
+body {
+  margin: 0;
+  background-color: #313131;
+}
+
+.board {
+  display: grid;
+  grid-template: repeat(4, var(--border-size)) / repeat(4, var(--border-size));
+}
+
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  user-select: none;
+  color: var(--color);
+  font-size: 4rem;
+}
+
+.square:nth-child(-n+4) {
+  border-bottom: var(--border);
+}
+
+.square:nth-child(4n+1) {
+  border-right: var(--border);
+}
+
+.square:nth-child(4n+2) {
+  border-right: var(--border);
+}
+
+.square:nth-child(4n) {
+  border-left: var(--border);
+}
+
+.square:nth-child(n+9) {
+  border-top: var(--border);
+}
+
+.disabled{
+  color: red;
+}
+
+.snapshot {
+  width: fit-content;
+}
