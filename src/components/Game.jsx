@@ -10,16 +10,17 @@ export default function Game(){
   const [ board, setBoard ] = useState(EMPTY_BOARD)
   const [ currentPlayer, setCurrentPlayer ] = useState(true)
   const [ gameStatus, setGameStatus ] = useState(ON_GOING)
-  const [history, setHistory] = useState([{board: EMPTY_BOARD, currentPlayer: true, isDisabled: false}]);
+  const [history, setHistory] = useState([{board: EMPTY_BOARD, currentPlayer: true, isDisabled: false}])
+  const [ offset, setOffset ] = useState(0)
   
 
   function onRestore(snapshot){
-    console.log("Restore")
     disableWinChecker.current = true
-    const newHistory = history.map((snap, index) => ({...snap, isDisabled: index > snapshot.index}))
-
+    const newHistory = history.map((snap, index) => ({...snap, isDisabled: index > snapshot.index}))    
+    
     setHistory(newHistory)
-    setCurrentPlayer(snapshot.currentPlayer)
+    setCurrentPlayer(snapshot.index === 0 || !snapshot.currentPlayer)
+    setOffset(snapshot.index)
     setBoard(snapshot.board)
   
   }
@@ -28,10 +29,12 @@ export default function Game(){
     if(!board[index] && !gameStatus){
       disableWinChecker.current = false
       const symbol = currentPlayer ? "X" : "O"
-      const newBoard = Object.assign([...board], {[index]: symbol})
-      const newHistory = [...history, {board: newBoard, currentPlayer: currentPlayer, isDisabled: false}]
+      const newBoard = [...board]
+      newBoard[index] = symbol
+      const newHistory = [...history.slice(0, offset+1), {board: newBoard, currentPlayer, isDisabled: false}]
 
       setHistory(newHistory)
+      setOffset(newHistory.length - 1)
       setBoard(newBoard)
     }
   }
@@ -49,16 +52,12 @@ export default function Game(){
           setBoard(EMPTY_BOARD)
           setCurrentPlayer(true)
           setGameStatus(ON_GOING)
-          // setHistory([makeSnapshot(0, EMPTY_BOARD, true, onRestore)])
-          // setHistoryOffset(1)
         }, 2000)
       }
     }
 
     function isEqual(testItem, item){
-      if(!!testItem && testItem === item)
-        return true
-      return false
+      return !!testItem && testItem === item
     }
 
     function isWon(){
@@ -106,8 +105,8 @@ export default function Game(){
     <div className="Game">
       <Board board={board} drawPlayer={drawPlayer}/>
       <h1>{`currentPlayer:${currentPlayer} | gameStatus: ${gameStatus}`}</h1>
-      <h1>History</h1>
-      <h1>{history.map((snap, index) => <Snapshot key={index} {...snap} index={index} onRestore={onRestore}/>)}</h1>
+      <h1>History
+          {history.map((snap, index) => <Snapshot key={index} {...snap} index={index} onRestore={onRestore}/>)}</h1>
     </div>
   )
 }
