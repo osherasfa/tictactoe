@@ -1,6 +1,6 @@
 export default function Snapshot(snapshot){ 
-  // console.log(snapshot)
-  const move = !snapshot.index ? `game start` : `move #${snapshot.index}`
+  console.log(snapshot)
+  const move = !snapshot.index ? `game start` : `move #${snapshot.index}: ${snapshot.currentPlayer}`
   const disableClass = snapshot.isDisabled ? " disabled" : ""
 
   return(

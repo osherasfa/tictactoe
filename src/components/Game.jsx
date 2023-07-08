@@ -5,49 +5,33 @@ import Snapshot from "./Snapshot"
 const ON_GOING = 0, WIN = 1, DRAW = 2
 const EMPTY_BOARD = Array(16).fill(null)
 
-function makeSnapshot(index, board, currentPlayer, onRestore){
-  const snapshot = { index, board, currentPlayer, onRestore }        
-
-  return <Snapshot key={index} {...snapshot}/>
-}
-
 export default function Game(){
   const disableWinChecker = useRef(true)
   const [ board, setBoard ] = useState(EMPTY_BOARD)
   const [ currentPlayer, setCurrentPlayer ] = useState(true)
   const [ gameStatus, setGameStatus ] = useState(ON_GOING)
-  const [ history, setHistory ] = useState([makeSnapshot(0, EMPTY_BOARD, true, onRestore)])
-  const [ offset, setOffset ] = useState(0)
-
-  //React.cloneElement(snapItem, { isDisabled: index > snapshot.index})
+  const [history, setHistory] = useState([{board: EMPTY_BOARD, currentPlayer: true, isDisabled: false}]);
+  
 
   function onRestore(snapshot){
-    setHistory(prevHistory => prevHistory.map((snapItem, index) =>  {
-        let isDisabled = false
-        disableWinChecker.current = true
+    console.log("Restore")
+    disableWinChecker.current = true
+    const newHistory = history.map((snap, index) => ({...snap, isDisabled: index > snapshot.index}))
 
-        if(index > snapshot.index){
-          isDisabled = true
-        }
-        else{
-          if(index === snapshot.index){
-            setCurrentPlayer(snapshot.currentPlayer)
-          }
-          setBoard(snapshot.board)
-        }
-
-        return React.cloneElement(snapItem, { isDisabled})
-    }))
+    setHistory(newHistory)
+    setCurrentPlayer(snapshot.currentPlayer)
+    setBoard(snapshot.board)
+  
   }
 
   function drawPlayer(index){
     if(!board[index] && !gameStatus){
+      disableWinChecker.current = false
       const symbol = currentPlayer ? "X" : "O"
       const newBoard = Object.assign([...board], {[index]: symbol})
-      const nextMove = makeSnapshot(history.length, newBoard, currentPlayer, onRestore)
+      const newHistory = [...history, {board: newBoard, currentPlayer: currentPlayer, isDisabled: false}]
 
-      setHistory(prevHistory => ([...prevHistory, nextMove]))
-      setOffset(history.length + 1)
+      setHistory(newHistory)
       setBoard(newBoard)
     }
   }
@@ -109,10 +93,12 @@ export default function Game(){
         changeGameStatus(ON_GOING)
     }
 
-    if(disableWinChecker.current)
+    if(disableWinChecker.current){
+      console.log("disableWinChecker: True -> False")
       disableWinChecker.current = false
+    }
     else
-      isWon()
+    isWon()
 
   },[board])
 
@@ -120,7 +106,8 @@ export default function Game(){
     <div className="Game">
       <Board board={board} drawPlayer={drawPlayer}/>
       <h1>{`currentPlayer:${currentPlayer} | gameStatus: ${gameStatus}`}</h1>
-      <h1>History: { history.map(snapshot => snapshot) } </h1>
+      <h1>History</h1>
+      <h1>{history.map((snap, index) => <Snapshot key={index} {...snap} index={index} onRestore={onRestore}/>)}</h1>
     </div>
   )
 }
