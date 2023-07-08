@@ -1,5 +1,4 @@
 export default function Snapshot(snapshot){ 
-  console.log(snapshot)
   const move = !snapshot.index ? `game start` : `move #${snapshot.index}: ${snapshot.currentPlayer}`
   const disableClass = snapshot.isDisabled ? " disabled" : ""
 
@@ -8,4 +7,4 @@ export default function Snapshot(snapshot){
   )
 }
 
-Snapshot.defaultProps = { playersPositions: { true: [], false: [] },  isDisabled: false }
+Snapshot.defaultProps = { isDisabled: false }
