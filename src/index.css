@@ -1,12 +1,24 @@
 :root{
-  --border: 0.2rem solid #d1d1d1;
-  --color: red;
+  --border: 0.2rem solid #00ff00;
+  --color: #00ff00;
   --border-size: 9rem;
+}
+
+@font-face {
+  font-family: daydream;
+  src: url(./assets/Daydream.ttf);
 }
 
 body {
   margin: 0;
-  background-color: #313131;
+  background-color: black;
+  color: var(--color);
+  font-family: daydream, monospace;
+  word-spacing: .5rem;
+}
+
+img{
+  width: 20rem;
 }
 
 .board {

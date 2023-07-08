@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import Board from "./Board"
 import Snapshot from "./Snapshot"
+import logo from "../assets/logo.png"
 
 const ON_GOING = 0, WIN = 1, DRAW = 2
 const EMPTY_BOARD = Array(16).fill(null)
@@ -15,7 +16,7 @@ export default function Game(){
   const [ gameStatus, setGameStatus ] = useState(ON_GOING)
   const [history, setHistory] = useState(EMPTY_HISTORY)
   const [ offset, setOffset ] = useState(0)
-  
+  const symbol = currentPlayer ? "X" : "O"
 
   function onRestore(snapshot){
     if(!gameStatus){
@@ -33,7 +34,6 @@ export default function Game(){
   function drawPlayer(index){
     if(!board[index] && !gameStatus){
       disableWinChecker.current = false
-      const symbol = currentPlayer ? "X" : "O"
       const newBoard = [...board]
       newBoard[index] = symbol
       
@@ -119,11 +119,14 @@ export default function Game(){
 
   },[board])
 
+  const status =  gameStatus === WIN ? `${symbol} is the winner` :
+                  gameStatus === DRAW ? `Draw! there's no winners` : `${symbol}'s Turn`
   return(
     <div className="Game">
+      <img src={logo} alt="tictactoe_logo"/>
+      <h1>{status}</h1>
       <Board board={board} drawPlayer={drawPlayer}/>
-      <h1>{`currentPlayer:${currentPlayer} | gameStatus: ${gameStatus}`}</h1>
-      <h1>Players moves:{`{ true: ${playersMoves[true]}, false: ${playersMoves[false]} }`}</h1>
+      <h1>{`game status: ${gameStatus}`}</h1>
       <h1>History
           {history.map((snap, index) => <Snapshot key={index} {...snap} index={index} onRestore={onRestore}/>)}</h1>
     </div>
