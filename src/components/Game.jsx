@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react"
 import Board from "./Board"
 import History from "./History"
+import playerClick from "../assets/soundEffects/click.wav"
+import errorClick from "../assets/soundEffects/error.wav"
 
 
 const ON_GOING = 0, WIN = 1, DRAW = 2
@@ -8,12 +10,12 @@ const EMPTY_BOARD = Array(16).fill(null)
 const EMPTY_MOVES = Array(4).fill(null)
 const EMPTY_HISTORY = [{board: EMPTY_BOARD, currentPlayer: true, isDisabled: false, playersMoves: { true: EMPTY_MOVES, false: EMPTY_MOVES } }]
 
-export default function Game(){
+export default function Game(settings){
   const disableWinChecker = useRef(true)
   const [ board, setBoard ] = useState(EMPTY_BOARD)
   const [ currentPlayer, setCurrentPlayer ] = useState(true)
-  const [playersMoves, setPlayersMoves] = useState({ true: EMPTY_MOVES, false: EMPTY_MOVES })
   const [ gameStatus, setGameStatus ] = useState(ON_GOING)
+  const [playersMoves, setPlayersMoves] = useState({ true: EMPTY_MOVES, false: EMPTY_MOVES })
   const [history, setHistory] = useState(EMPTY_HISTORY)
   const [ offset, setOffset ] = useState(0)
   const symbol = currentPlayer ? "X" : "O"
@@ -25,32 +27,48 @@ export default function Game(){
       
       setBoard(snapshot.board)
       setCurrentPlayer(snapshot.index === 0 || !snapshot.currentPlayer)
-      setPlayersMoves(snapshot.playersMoves)
-      setHistory(newHistory)
-      setOffset(snapshot.index)
+      settings.isLimited && setPlayersMoves(snapshot.playersMoves)
+      if(settings.isHistory){
+        setHistory(newHistory)
+        setOffset(snapshot.index)
+      }
     }
   }
 
   function drawPlayer(index){
-    if(!board[index] && !gameStatus){
-      disableWinChecker.current = false
-      const newBoard = [...board]
-      newBoard[index] = symbol
-      
-      const  currentPlayerMoves = [...playersMoves[currentPlayer]]
-      const lastMove = currentPlayerMoves.shift()
-      currentPlayerMoves.push(index)
-      if(lastMove !== null)
-        newBoard[lastMove] = null
-      
-      const newPlayersMoves = {...playersMoves, [currentPlayer]: currentPlayerMoves }
-      
-      const newHistory = [...history.slice(0, offset+1), {board: newBoard, currentPlayer, isDisabled: false, playersMoves: newPlayersMoves}]
-      
-      setBoard(newBoard)
-      setPlayersMoves(newPlayersMoves)
-      setHistory(newHistory)
-      setOffset(newHistory.length - 1)
+    if(!gameStatus){
+      let audio
+      if(!board[index]){
+        audio = new Audio(playerClick)
+        disableWinChecker.current = false
+        const newBoard = [...board]
+        newBoard[index] = symbol
+        
+        setBoard(newBoard)
+        
+    
+        const  currentPlayerMoves = [...playersMoves[currentPlayer]]
+        const lastMove = currentPlayerMoves.shift()
+        currentPlayerMoves.push(index)
+        if(lastMove !== null)
+          newBoard[lastMove] = null
+
+        const newPlayersMoves = {...playersMoves, [currentPlayer]: currentPlayerMoves }
+        settings.isLimited && setPlayersMoves(newPlayersMoves)
+
+        if(settings.isHistory){
+          const newHistoryItem = {board: newBoard, currentPlayer, isDisabled: false, position: index }
+          if(settings.isLimited)
+            newHistoryItem[playersMoves] = newPlayersMoves
+
+          const newHistory = [...history.slice(0, offset+1), newHistoryItem]
+          setHistory(newHistory)
+          setOffset(newHistory.length - 1)
+        }
+      }
+      else
+        audio = new Audio(errorClick)
+      audio.play()
     }
   }
 
@@ -66,9 +84,11 @@ export default function Game(){
           setBoard(EMPTY_BOARD)
           setCurrentPlayer(true)
           setGameStatus(ON_GOING)
-          setPlayersMoves({ true: EMPTY_MOVES, false: EMPTY_MOVES })
-          setHistory(EMPTY_HISTORY)
-          setOffset(0)
+          settings.isLimited && setPlayersMoves({ true: EMPTY_MOVES, false: EMPTY_MOVES })
+          if(settings.isHistory){
+            setHistory(EMPTY_HISTORY)
+            setOffset(0)
+          }
           
         }, 2000)
       }
@@ -116,7 +136,7 @@ export default function Game(){
     else
     isWon()
 
-  },[board])
+  },[board, settings])
 
   const status =  gameStatus === WIN ? `${symbol} is the winner!` :
                   gameStatus === DRAW ? `Draw! there's no winners :(` : `${symbol}'s Turn`
@@ -126,7 +146,7 @@ export default function Game(){
         <h1 className="turn">{status}</h1>
         <Board board={board} drawPlayer={drawPlayer}/>
       </div>
-      <History history={history} onRestore={onRestore}/>
+      {settings.isHistory && <History history={history} onRestore={onRestore}/>}
     </div>
   )
 }

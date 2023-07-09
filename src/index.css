@@ -12,7 +12,7 @@
 
 @font-face {
   font-family: daydream;
-  src: url(./assets/Daydream.ttf);
+  src: url(./assets/fonts/Daydream.ttf);
 }
 
 body {
@@ -34,6 +34,14 @@ body {
   margin: 1rem auto;
 }
 
+/* ---------- Menu ---------- */
+.menu{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 /* ---------- Game ---------- */
 .game{
   display: flex;
@@ -47,6 +55,7 @@ body {
 .turn {
   text-align: center;
   font-size: calc(var(--symbol-size)/2.2);
+  max-width: 40rem;
 }
 
 /* Game -> Board */

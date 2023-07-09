@@ -1,11 +1,15 @@
 import Game from "./components/Game";
-import logo from "./assets/logo.png"
+import Menu from "./components/Menu";
+import logo from "./assets/images/logo.png";
+
 
 function App() {
   return (
     <div className="App">
       <img className="logo" src={logo} alt="tictactoe_logo"/>
-      <Game/>
+      <Menu>
+        <Game/>
+      </Menu>
     </div>
   );
 }

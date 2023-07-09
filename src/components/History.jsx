@@ -1,5 +1,5 @@
 import Snapshot from "./Snapshot"
-import arrowDown from "../assets/arrow_down.png"
+import arrowDown from "../assets/images/arrow_down.png"
 
 export default function History({history, onRestore}){
   return(
