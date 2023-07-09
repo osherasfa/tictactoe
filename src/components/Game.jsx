@@ -122,10 +122,10 @@ export default function Game(){
                   gameStatus === DRAW ? `Draw! there's no winners :(` : `${symbol}'s Turn`
   return(
     <div className="game">
-      <>
+      <div>
         <h1 className="turn">{status}</h1>
         <Board board={board} drawPlayer={drawPlayer}/>
-      </>
+      </div>
       <History history={history} onRestore={onRestore}/>
     </div>
   )
