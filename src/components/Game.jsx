@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import Board from "./Board"
-import Snapshot from "./Snapshot"
-import logo from "../assets/logo.png"
+import History from "./History"
+
 
 const ON_GOING = 0, WIN = 1, DRAW = 2
 const EMPTY_BOARD = Array(16).fill(null)
@@ -40,8 +40,8 @@ export default function Game(){
       const  currentPlayerMoves = [...playersMoves[currentPlayer]]
       const lastMove = currentPlayerMoves.shift()
       currentPlayerMoves.push(index)
-      if(lastMove)
-      newBoard[lastMove] = null
+      if(lastMove !== null)
+        newBoard[lastMove] = null
       
       const newPlayersMoves = {...playersMoves, [currentPlayer]: currentPlayerMoves }
       
@@ -59,9 +59,8 @@ export default function Game(){
       if(status === ON_GOING)
         setCurrentPlayer(prevTurn => !prevTurn)
       else{
-        console.log(status === WIN ? `WIN!` : `DRAW!`)
-
         setGameStatus(status)
+
         setTimeout(() => {
           disableWinChecker.current = true
           setBoard(EMPTY_BOARD)
@@ -119,16 +118,15 @@ export default function Game(){
 
   },[board])
 
-  const status =  gameStatus === WIN ? `${symbol} is the winner` :
-                  gameStatus === DRAW ? `Draw! there's no winners` : `${symbol}'s Turn`
+  const status =  gameStatus === WIN ? `${symbol} is the winner!` :
+                  gameStatus === DRAW ? `Draw! there's no winners :(` : `${symbol}'s Turn`
   return(
-    <div className="Game">
-      <img src={logo} alt="tictactoe_logo"/>
-      <h1>{status}</h1>
-      <Board board={board} drawPlayer={drawPlayer}/>
-      <h1>{`game status: ${gameStatus}`}</h1>
-      <h1>History
-          {history.map((snap, index) => <Snapshot key={index} {...snap} index={index} onRestore={onRestore}/>)}</h1>
+    <div className="game">
+      <>
+        <h1 className="turn">{status}</h1>
+        <Board board={board} drawPlayer={drawPlayer}/>
+      </>
+      <History history={history} onRestore={onRestore}/>
     </div>
   )
 }
