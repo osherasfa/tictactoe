@@ -4,7 +4,6 @@ import History from "./History"
 import playerClick from "../assets/soundEffects/click.wav"
 import errorClick from "../assets/soundEffects/error.wav"
 
-
 const ON_GOING = 0, WIN = 1, DRAW = 2
 const EMPTY_BOARD = Array(16).fill(null)
 const EMPTY_MOVES = Array(4).fill(null)
@@ -46,7 +45,6 @@ export default function Game(settings){
         
         setBoard(newBoard)
         
-    
         const  currentPlayerMoves = [...playersMoves[currentPlayer]]
         const lastMove = currentPlayerMoves.shift()
         currentPlayerMoves.push(index)
@@ -54,12 +52,13 @@ export default function Game(settings){
           newBoard[lastMove] = null
 
         const newPlayersMoves = {...playersMoves, [currentPlayer]: currentPlayerMoves }
-        settings.isLimited && setPlayersMoves(newPlayersMoves)
+        if(settings.isLimited)
+          setPlayersMoves(newPlayersMoves)
 
         if(settings.isHistory){
           const newHistoryItem = {board: newBoard, currentPlayer, isDisabled: false, position: index }
           if(settings.isLimited)
-            newHistoryItem[playersMoves] = newPlayersMoves
+            newHistoryItem["playersMoves"] = newPlayersMoves
 
           const newHistory = [...history.slice(0, offset+1), newHistoryItem]
           setHistory(newHistory)

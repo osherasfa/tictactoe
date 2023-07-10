@@ -11,7 +11,7 @@ export default function Snapshot(snapshot){
   }
 
   return(
-    <div className={`snapshot${disableClass}`} id={index} onClick={() => onRestore(snapshot)}>{`#${index}: ${move}`}</div>
+    <div className={`snapshot${disableClass} button`} id={index} onClick={() => onRestore(snapshot)}>{`#${index}: ${move}`}</div>
   )
 }
 
