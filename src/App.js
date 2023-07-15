@@ -8,32 +8,43 @@ import Click from "./assets/soundEffects/clickTwo.wav"
 const clickSound = new Audio(Click)
 
 function App() {
-  const [ showMenu, setShowMenu ] = React.useState(true)
-  const [ picker, setPicker ] = React.useState(false)
-  const [ theme, setTheme ] = React.useState({ background: "#000000", color: "#00ff00"})
+  const [ settings, setSettings ] = React.useState({on: false, gameOn: false, game:{versus: "bot", limited: true, history: true}})
+  const [ theme, setTheme ] = React.useState({ background: "#000000", color: "#00ff00", on: false})
   const [ music, setMusic ] = React.useState(false)
 
   document.documentElement.style.setProperty('--color', theme.color)
   document.documentElement.style.setProperty('--background', theme.background)
 
   const btnEls = document.getElementsByClassName("button")
-  for (let i = 0; i < btnEls.length; i++)
+  for (let i = 0; i < btnEls.length; i++){
     btnEls.item(i).addEventListener("click", () => clickSound.play())
+  }
+
+  const toggleGame = () => setSettings({...settings, gameOn: !settings.gameOn})
+  const toggleSettings = () => setSettings({...settings, on: !settings.on})
+  const toggleHistory = () => setSettings({...settings, game: {...settings.game, history: !settings.game.history}})
+  const toggleLimited = (mode) => setSettings({...settings, game: {...settings.game, limited: mode}})
+
+  const toggleTheme = (event) => setTheme({...theme, [event.target.id]: event.target.value})
+  const togglePicker = () => setTheme({...theme, on: !theme.on})
+
+  const toggleMusic = () => setMusic(!music)
 
   return (
     <div className="App">
         <Logo/>
-        {showMenu 
-          ? <Menu  
-              theme={theme}
-              picker={picker}
-              music={music}
-              openTheme={() => setPicker(prevPicker => !prevPicker)}
-              changeTheme={(event) => setTheme(prevTheme => ({...prevTheme, [event.target.id]: event.target.value}))}
-              activeMusic={() => setMusic(prevMusic => !prevMusic)}
-              start={() => setShowMenu(false)}
+        {settings.gameOn 
+          ? <Game 
+              isHistory={true}
+              isLimited={true}
+              goBack={toggleGame}
             /> 
-          : <Game isHistory={true} isLimited={true}/>}
+          : <Menu
+              theme={{...theme, open: togglePicker, change:toggleTheme}}
+              music={{isOn: music, play: toggleMusic}}
+              settings={{...settings, start: toggleGame, open: toggleSettings, toggleHistory, toggleLimited}}
+            />
+        }
     </div>
   );
 }

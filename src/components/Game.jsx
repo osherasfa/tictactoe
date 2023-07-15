@@ -4,6 +4,7 @@ import Board from "./Board"
 import History from "./History"
 import playerClick from "../assets/soundEffects/click.wav"
 import errorClick from "../assets/soundEffects/error.wav"
+import ArrowDown from "../assets/images/ArrowDown";
 
 const ON_GOING = 0, WIN = 1, DRAW = 2
 const EMPTY_BOARD = Array(16).fill(null)
@@ -141,12 +142,15 @@ export default function Game(settings){
   const status =  gameStatus === WIN ? `${symbol} is the winner!` :
                   gameStatus === DRAW ? `Draw! there's no winners :(` : `${symbol}'s Turn`
   return(
-    <div className="game">
-      <div>
-        <h1 className="turn">{status}</h1>
-        <Board board={board} drawPlayer={drawPlayer}/>
+    <>
+      <ArrowDown className="return button" onClick={settings.goBack}/>
+      <div className="game">
+        <div>
+          <h1 className="turn">{status}</h1>
+          <Board board={board} drawPlayer={drawPlayer}/>
+        </div>
+        {settings.isHistory && <History history={history} onRestore={onRestore}/>}
       </div>
-      {settings.isHistory && <History history={history} onRestore={onRestore}/>}
-    </div>
+    </>
   )
 }
