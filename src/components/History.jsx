@@ -1,3 +1,4 @@
+import "../styles/History.css"
 import Snapshot from "./Snapshot"
 import ArrowDown from "../assets/images/ArrowDown"
 

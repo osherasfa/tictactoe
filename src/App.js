@@ -1,10 +1,11 @@
-import React from "react";
-import Game from "./components/Game";
-import Menu from "./components/Menu";
-import Logo from "./assets/images/Logo";
+import "./styles/App.css"
+import React from "react"
+import Game from "./components/Game"
+import Menu from "./components/Menu"
+import Logo from "./assets/images/Logo"
 import Click from "./assets/soundEffects/clickTwo.wav"
 
-const btnClick = new Audio(Click)
+const clickSound = new Audio(Click)
 
 function App() {
   const [ showMenu, setShowMenu ] = React.useState(true)
@@ -17,7 +18,7 @@ function App() {
 
   const btnEls = document.getElementsByClassName("button")
   for (let i = 0; i < btnEls.length; i++)
-    btnEls.item(i).addEventListener("click", () => btnClick.play())
+    btnEls.item(i).addEventListener("click", () => clickSound.play())
 
   return (
     <div className="App">
@@ -32,7 +33,7 @@ function App() {
               activeMusic={() => setMusic(prevMusic => !prevMusic)}
               start={() => setShowMenu(false)}
             /> 
-          : <Game isHistory={true} isLimited={false}/>}
+          : <Game isHistory={true} isLimited={true}/>}
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import React from "react";
+import "../styles/Menu.css"
+import React from "react"
 import GameAudio from "../assets/images/GameAudio"
 import dinoChill from "../assets/soundEffects/dino_chill.mp3"
 
@@ -12,24 +13,30 @@ export default function Menu({ start, theme, picker, music, openTheme, changeThe
   return (
     <div className="menu">
       <h1 onClick={start} className="button">Play</h1>
-      <h1 onClick={openTheme} className="button" style={picker ? {marginBottom: "0"} : null }>Theme</h1>
+      <div>
+        <h1 onClick={openTheme} className="button">Theme</h1>
 
-      { picker ? (
-            <div>
-              <h5 className={`button${isDottedTheme ? "" : " disabled"}`}><span style={{fontSize: "8px"}}>(under development)</span><br/>dotted</h5>
-              <h5 className={`button${isDottedTheme ? " disabled" : ""}`}>8-bit</h5>
+        { picker ? (
+              <div>
+                <h5 className={`button${isDottedTheme ? "" : " disabled"}`}>
+                  <span style={{fontSize: ".5rem"}}>(under development)</span>
+                  <br/>
+                  dotted
+                </h5>
 
-              <div id="picker-container">
-                <label>color: <input type="color" id="color" className="picker" onChange={changeTheme} value={theme.color}/> &nbsp;</label>
-                <label>background: <input type="color" id="background" className="picker" onChange={changeTheme}  value={theme.background}/></label>
+                <h5 className={`button${isDottedTheme ? " disabled" : ""}`}>8-bit</h5>
+                <h6 className="color-picker">
+                  <label>color: <input type="color" id="color" className="picker" onChange={changeTheme} value={theme.color}/></label>
+                  <label>background: <input type="color" id="background" className="picker" onChange={changeTheme}  value={theme.background}/></label>
+                </h6>
+
+
               </div>
-
-
-            </div>
-      ) : null }
+        ) : null }
+      </div>
 
       <h1 className="button"> <GameAudio onClick={activeMusic}  music={music}/> </h1>
     </div>
   );
 }
-
+// &nbsp;

@@ -1,0 +1,15 @@
+.game{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+  gap: 2em;
+}
+
+.turn {
+  margin: 0;
+  padding-block: 1em;
+  text-align: center;
+  font-size: calc(var(--symbol-size)/2.5);
+}

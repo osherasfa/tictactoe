@@ -1,3 +1,4 @@
+import "../styles/Game.css";
 import React, { useState, useEffect, useRef } from "react"
 import Board from "./Board"
 import History from "./History"

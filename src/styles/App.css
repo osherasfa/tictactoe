@@ -1,0 +1,17 @@
+.App{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  
+  max-width: 100rem;
+}
+
+.logo{
+  width: 70vw;
+  height: 100%;
+  max-width: 30rem;
+  margin-block: 3rem 1rem;
+}
+
+svg { color: var(--color); }

@@ -1,0 +1,36 @@
+/* Game -> Board */
+.board {
+  display: grid;
+  grid-template: repeat(4, 1fr) / repeat(4, 1fr);
+  
+  width: 90vw;
+  aspect-ratio: 1 / 1;
+  max-width: 40rem;
+}
+
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--symbol-size);
+}
+
+.square:nth-child(-n+4) {
+  border-bottom: var(--board-style);
+}
+
+.square:nth-child(4n+1) {
+  border-right: var(--board-style);
+}
+
+.square:nth-child(4n+2) {
+  border-right: var(--board-style);
+}
+
+.square:nth-child(4n) {
+  border-left: var(--board-style);
+}
+
+.square:nth-child(n+9) {
+  border-top: var(--board-style);
+}
