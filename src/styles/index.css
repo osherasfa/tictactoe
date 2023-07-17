@@ -6,6 +6,8 @@
 
   --history-size: .35rem;
   --history-style: var(--color) double .5rem;
+
+  --font-style: daydream, monospace;
 }
 
 @font-face {
@@ -19,7 +21,7 @@ body {
   background-repeat: repeat;
   color: var(--color);
   
-  font-family: daydream, monospace;
+  font-family: var(--font-style);
   word-spacing: .5rem;
   letter-spacing: .1rem;
   user-select: none;

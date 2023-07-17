@@ -9,7 +9,7 @@ const clickSound = new Audio(Click)
 
 function App() {
   const [ settings, setSettings ] = React.useState({on: false, gameOn: false, game:{versus: "bot", limited: true, history: true}})
-  const [ theme, setTheme ] = React.useState({ background: "#000000", color: "#00ff00", on: false})
+  const [ theme, setTheme ] = React.useState({ on: false, background: "#000000", color: "#00ff00"})
   const [ music, setMusic ] = React.useState(false)
 
   document.documentElement.style.setProperty('--color', theme.color)
@@ -20,13 +20,12 @@ function App() {
     btnEls.item(i).addEventListener("click", () => clickSound.play())
   }
 
-  const toggleGame = () => setSettings({...settings, gameOn: !settings.gameOn})
+  const toggleGame = () => setSettings({...settings, gameOn: !settings.gameOn, on: false})
   const toggleSettings = () => setSettings({...settings, on: !settings.on})
-  const toggleHistory = () => setSettings({...settings, game: {...settings.game, history: !settings.game.history}})
-  const toggleLimited = (mode) => setSettings({...settings, game: {...settings.game, limited: mode}})
+  const toggleGameSettings = (type, mode) => setSettings({...settings, game: {...settings.game, [type]: mode}})
 
-  const toggleTheme = (event) => setTheme({...theme, [event.target.id]: event.target.value})
-  const togglePicker = () => setTheme({...theme, on: !theme.on})
+  const toggleTheme = () => setTheme({...theme, on: !theme.on})
+  const toggleColor = (event) => setTheme({...theme, [event.target.id]: event.target.value})
 
   const toggleMusic = () => setMusic(!music)
 
@@ -34,15 +33,11 @@ function App() {
     <div className="App">
         <Logo/>
         {settings.gameOn 
-          ? <Game 
-              isHistory={true}
-              isLimited={true}
-              goBack={toggleGame}
-            /> 
+          ? <Game settings={{...settings.game, return: toggleGame}}/> 
           : <Menu
-              theme={{...theme, open: togglePicker, change:toggleTheme}}
+              theme={{...theme, open: toggleTheme, change: toggleColor}}
               music={{isOn: music, play: toggleMusic}}
-              settings={{...settings, start: toggleGame, open: toggleSettings, toggleHistory, toggleLimited}}
+              settings={{...settings, start: toggleGame, open: toggleSettings, toggleGameSettings}}
             />
         }
     </div>

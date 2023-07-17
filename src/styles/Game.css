@@ -8,15 +8,21 @@
 }
 
 .turn {
-  margin: 0;
-  padding-block: 1em;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 1em .5em;
+
   text-align: center;
   font-size: calc(var(--symbol-size)/2.5);
 }
 
 .return{
-  scale: 1.2;
-  rotate: -90deg;
-  margin-right:.3rem;
   align-self: flex-end;
+  
+  border: var(--board-style);
+  border-width: .15rem;
+  padding: .5rem;
+
+  font-size: calc(var(--symbol-size)/4);
+  margin-right: 2em;
  }

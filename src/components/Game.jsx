@@ -2,16 +2,16 @@ import "../styles/Game.css";
 import React, { useState, useEffect, useRef } from "react"
 import Board from "./Board"
 import History from "./History"
+
 import playerClick from "../assets/soundEffects/click.wav"
 import errorClick from "../assets/soundEffects/error.wav"
-import ArrowDown from "../assets/images/ArrowDown";
 
 const ON_GOING = 0, WIN = 1, DRAW = 2
 const EMPTY_BOARD = Array(16).fill(null)
 const EMPTY_MOVES = Array(4).fill(null)
 const EMPTY_HISTORY = [{board: EMPTY_BOARD, currentPlayer: true, isDisabled: false, playersMoves: { true: EMPTY_MOVES, false: EMPTY_MOVES } }]
 
-export default function Game(settings){
+export default function Game({settings}){
   const disableWinChecker = useRef(true)
   const [ board, setBoard ] = useState(EMPTY_BOARD)
   const [ currentPlayer, setCurrentPlayer ] = useState(true)
@@ -28,8 +28,8 @@ export default function Game(settings){
       
       setBoard(snapshot.board)
       setCurrentPlayer(snapshot.index === 0 || !snapshot.currentPlayer)
-      settings.isLimited && setPlayersMoves(snapshot.playersMoves)
-      if(settings.isHistory){
+      settings.limited && setPlayersMoves(snapshot.playersMoves)
+      if(settings.history){
         setHistory(newHistory)
         setOffset(snapshot.index)
       }
@@ -54,12 +54,12 @@ export default function Game(settings){
           newBoard[lastMove] = null
 
         const newPlayersMoves = {...playersMoves, [currentPlayer]: currentPlayerMoves }
-        if(settings.isLimited)
+        if(settings.limited)
           setPlayersMoves(newPlayersMoves)
 
-        if(settings.isHistory){
+        if(settings.history){
           const newHistoryItem = {board: newBoard, currentPlayer, isDisabled: false, position: index }
-          if(settings.isLimited)
+          if(settings.limited)
             newHistoryItem["playersMoves"] = newPlayersMoves
 
           const newHistory = [...history.slice(0, offset+1), newHistoryItem]
@@ -85,8 +85,8 @@ export default function Game(settings){
           setBoard(EMPTY_BOARD)
           setCurrentPlayer(true)
           setGameStatus(ON_GOING)
-          settings.isLimited && setPlayersMoves({ true: EMPTY_MOVES, false: EMPTY_MOVES })
-          if(settings.isHistory){
+          settings.limited && setPlayersMoves({ true: EMPTY_MOVES, false: EMPTY_MOVES })
+          if(settings.history){
             setHistory(EMPTY_HISTORY)
             setOffset(0)
           }
@@ -140,16 +140,16 @@ export default function Game(settings){
   },[board, settings])
 
   const status =  gameStatus === WIN ? `${symbol} is the winner!` :
-                  gameStatus === DRAW ? `Draw! there's no winners :(` : `${symbol}'s Turn`
+                  gameStatus === DRAW ? `Draw! there's no winners.` : `${symbol}'s Turn.`
   return(
     <>
-      <ArrowDown className="return button" onClick={settings.goBack}/>
+      <p className="return button" onClick={settings.return}>Return</p>
       <div className="game">
         <div>
           <h1 className="turn">{status}</h1>
           <Board board={board} drawPlayer={drawPlayer}/>
         </div>
-        {settings.isHistory && <History history={history} onRestore={onRestore}/>}
+        {settings.history && <History history={history} onRestore={onRestore}/>}
       </div>
     </>
   )

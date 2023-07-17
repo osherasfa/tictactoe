@@ -13,6 +13,13 @@ h1, h5, h6{ margin: 0rem; }
 .game-options label{
   display: flex;
   align-items: center;
+  margin: 1rem;
+}
+
+.game-options label h6:not(.disabled){
+  border: var(--board-style);
+  border-width: .15rem;
+  padding: .5rem;
 }
 
 .game-options h6:first-child{
@@ -23,7 +30,6 @@ h1, h5, h6{ margin: 0rem; }
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin: .5rem 0 0 0;
 }
 
 .color-picker label{

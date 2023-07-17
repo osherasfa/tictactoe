@@ -9,8 +9,8 @@ const dinoAudio = new Audio(dinoChill)
 dinoAudio.loop = true
 
 export default function Menu({ settings, theme, music }){
-  const isDottedTheme = theme.background.includes("url")
   const isLimited = settings.game.limited
+  const isHistory = settings.game.history
   music.isOn ? dinoAudio.play() : dinoAudio.pause()
 
   return (
@@ -18,34 +18,31 @@ export default function Menu({ settings, theme, music }){
       <h1 onClick={settings.start} className="button">Play</h1>
       <div>
         <h1 onClick={settings.open} className="button">Settings</h1>
-
         { settings.on ? (
               <div className="game-options">
+                <label>Versus: 
+                  <h6 className={`button disabled`}>Bot</h6>
+                  <h6 className={`button`}>Local</h6>
+                </label>
                 <label>Mode: 
-                  <h6 className={`button${isLimited ? "" : " disabled"}`} onClick={() => settings.toggleLimited(true)}>4-limit</h6>
-                  <h6 className={`button${isLimited ? " disabled" : ""}`} onClick={() => settings.toggleLimited(false)}>Free-style</h6>
+                  <h6 className={`button${isLimited ? "" : " disabled"}`} onClick={() => settings.toggleGameSettings("limited", true)}>Limited</h6>
+                  <h6 className={`button${isLimited ? " disabled" : ""}`} onClick={() => settings.toggleGameSettings("limited", false)}>Free</h6>
+                </label>
+                <label>History: 
+                  <h6 className={`button${isHistory ? "" : " disabled"}`} onClick={() => settings.toggleGameSettings("history", true)}>ON</h6>
+                  <h6 className={`button${isHistory ? " disabled" : ""}`} onClick={() => settings.toggleGameSettings("history", false)}>OFF</h6>
                 </label>
               </div>
         ) : null }
-
       </div>
 
       <div>
         <h1 onClick={theme.open} className="button">Theme</h1>
         { theme.on ? (
-              <div>
-                <h5 className={`button${isDottedTheme ? "" : " disabled"}`}>
-                  <span style={{fontSize: ".5rem"}}>(under development)</span>
-                  <br/>
-                  dotted
-                </h5>
-
-                <h5 className={`button${isDottedTheme ? " disabled" : ""}`}>8-bit</h5>
-                <h6 className="color-picker">
-                  <label>color: <input type="color" id="color" className="picker" onChange={theme.change} value={theme.color}/></label>
-                  <label>background: <input type="color" id="background" className="picker" onChange={theme.change}  value={theme.background}/></label>
-                </h6>
-              </div>
+              <h6 className="color-picker">
+                <label>color: <input type="color" id="color" className="picker" onChange={theme.change} value={theme.color}/></label>
+                <label>background: <input type="color" id="background" className="picker" onChange={theme.change}  value={theme.background}/></label>
+              </h6>
         ) : null }
       </div>
 
