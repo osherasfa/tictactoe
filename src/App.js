@@ -8,7 +8,7 @@ import Click from "./assets/soundEffects/clickTwo.wav"
 const clickSound = new Audio(Click)
 
 function App() {
-  const [ settings, setSettings ] = React.useState({on: false, gameOn: false, game:{versus: "bot", limited: true, history: true}})
+  const [ settings, setSettings ] = React.useState({on: false, gameOn: false, game:{versus: true, size: false, limited: true, history: true}})
   const [ theme, setTheme ] = React.useState({ on: false, background: "#000000", color: "#00ff00"})
   const [ music, setMusic ] = React.useState(false)
 
@@ -20,7 +20,10 @@ function App() {
     btnEls.item(i).addEventListener("click", () => clickSound.play())
   }
 
-  const toggleGame = () => setSettings({...settings, gameOn: !settings.gameOn, on: false})
+  const toggleGame = () => {
+    setSettings({...settings, gameOn: !settings.gameOn, on: false})
+    setTheme({...theme, on:false})
+  }
   const toggleSettings = () => setSettings({...settings, on: !settings.on})
   const toggleGameSettings = (type, mode) => setSettings({...settings, game: {...settings.game, [type]: mode}})
 
@@ -31,9 +34,9 @@ function App() {
 
   return (
     <div className="App">
-        <Logo/>
+        <Logo className="logo button" onClick={() => settings.gameOn && setSettings({...settings, gameOn: false})}/>
         {settings.gameOn 
-          ? <Game settings={{...settings.game, return: toggleGame}}/> 
+          ? <Game settings={{...settings.game, size: settings.game.size ? 4 : 3, return: toggleGame}}/> 
           : <Menu
               theme={{...theme, open: toggleTheme, change: toggleColor}}
               music={{isOn: music, play: toggleMusic}}

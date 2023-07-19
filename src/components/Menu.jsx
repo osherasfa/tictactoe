@@ -9,31 +9,22 @@ const dinoAudio = new Audio(dinoChill)
 dinoAudio.loop = true
 
 export default function Menu({ settings, theme, music }){
-  const isLimited = settings.game.limited
-  const isHistory = settings.game.history
   music.isOn ? dinoAudio.play() : dinoAudio.pause()
 
+  const hashNames = { versus: ["Bot", "Local"], limited: ["Limited", "Free"], history: ["ON", "OFF"], size: ["4x4", "3x3"] }
+  let gameSettingsHTML = []
+  for (const [key, value] of Object.entries(settings.game)) {
+    gameSettingsHTML.push(<label key={key}>{`${key}:`} 
+                          <h6 className={`button${value ? "" : " disabled"}`} onClick={() => settings.toggleGameSettings(key, true)}>{hashNames[key][0]}</h6>
+                          <h6 className={`button${value ? " disabled" : ""}`} onClick={() => settings.toggleGameSettings(key, false)}>{hashNames[key][1]}</h6>
+                        </label>)
+  }
   return (
     <div className="menu">
       <h1 onClick={settings.start} className="button">Play</h1>
       <div>
         <h1 onClick={settings.open} className="button">Settings</h1>
-        { settings.on ? (
-              <div className="game-options">
-                <label>Versus: 
-                  <h6 className={`button disabled`}>Bot</h6>
-                  <h6 className={`button`}>Local</h6>
-                </label>
-                <label>Mode: 
-                  <h6 className={`button${isLimited ? "" : " disabled"}`} onClick={() => settings.toggleGameSettings("limited", true)}>Limited</h6>
-                  <h6 className={`button${isLimited ? " disabled" : ""}`} onClick={() => settings.toggleGameSettings("limited", false)}>Free</h6>
-                </label>
-                <label>History: 
-                  <h6 className={`button${isHistory ? "" : " disabled"}`} onClick={() => settings.toggleGameSettings("history", true)}>ON</h6>
-                  <h6 className={`button${isHistory ? " disabled" : ""}`} onClick={() => settings.toggleGameSettings("history", false)}>OFF</h6>
-                </label>
-              </div>
-        ) : null }
+        { settings.on ? <div className="game-options">{ gameSettingsHTML }</div> : null }
       </div>
 
       <div>
