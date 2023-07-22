@@ -31,6 +31,7 @@ body {
   text-align: center;
   cursor: pointer;
 }
+
 .button:hover{ transform: scale(0.9); }
 .button:active{ color: var(--color-secondary); }
 .disabled{ color: rgb(57, 57, 57); }

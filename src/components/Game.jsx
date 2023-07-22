@@ -1,36 +1,42 @@
-import "../styles/Game.css";
-import React, { useState, useEffect, useRef, useMemo } from "react"
-import Board from "./Board"
-import History from "./History"
-
 import playerClick from "../assets/soundEffects/click.wav"
 import errorClick from "../assets/soundEffects/error.wav"
+import Board from "./Board"
+import History from "./History"
+import "../styles/Game.css"
+import chroma from "chroma-js"
+import React, { useState, useEffect, useRef } from "react"
 
-const ON_GOING = 0, WIN = 1, DRAW = 2
+
+// eslint-disable-next-line
+const EMPTY_TRACKER = (size, palette) => [...Array(size)].reduce((moves, _, i) => (moves[` ${-(i+1)}`] = palette[i], moves), {});
 const EMPTY_BOARD = size => Array(size*size).fill(null)
-const EMPTY_MOVES = Array(4).fill(null)
-const EMPTY_HISTORY = size => [{board: EMPTY_BOARD(size), currentPlayer: true, isDisabled: false, playersMoves: { true: EMPTY_MOVES, false: EMPTY_MOVES } }]
+const ON_GOING = 0, WIN = 1, DRAW = 2
 
-export default function Game({settings}){
-  const { size } = settings
-  const disableWinChecker = useRef(true)
+const errorSound = new Audio(errorClick), clickSound = new Audio(playerClick)
+
+export default function Game({settings}){ 
+  const { isBot, size, isLimited, isHistory, color } = settings
+  const colorPalette = chroma.scale([color, chroma(color).brighten(2)]).colors(size)
+
+  const checkWin = useRef(true)
   const [ board, setBoard ] = useState(EMPTY_BOARD(size))
   const [ currentPlayer, setCurrentPlayer ] = useState(true)
   const [ gameStatus, setGameStatus ] = useState(ON_GOING)
-  const [playersMoves, setPlayersMoves] = useState({ true: EMPTY_MOVES, false: EMPTY_MOVES })
-  const [history, setHistory] = useState(EMPTY_HISTORY(size))
+  const [tracker, setTacker] = useState({ true: EMPTY_TRACKER(size, colorPalette), false: EMPTY_TRACKER(size, colorPalette) })
+
+  const [history, setHistory] = useState([{board, currentPlayer, isDisabled: false, tracker}])
   const [ offset, setOffset ] = useState(0)
   const symbol = currentPlayer ? "X" : "O"
 
   function onRestore(snapshot){
     if(!gameStatus){
-      disableWinChecker.current = true
-      const newHistory = history.map((snap, index) => ({...snap, isDisabled: index > snapshot.index}))    
+      checkWin.current = true
+      const newHistory = history.map((snap, index) => ({...snap, isDisabled: index > snapshot.index}))
       
       setBoard(snapshot.board)
       setCurrentPlayer(snapshot.index === 0 || !snapshot.currentPlayer)
-      settings.limited && setPlayersMoves(snapshot.playersMoves)
-      if(settings.history){
+      isLimited && setTacker(snapshot.tracker)
+      if(isHistory){
         setHistory(newHistory)
         setOffset(snapshot.index)
       }
@@ -39,132 +45,152 @@ export default function Game({settings}){
 
   function drawPlayer(index){
     if(!gameStatus){
-      let audio
       if(!board[index]){
-        audio = new Audio(playerClick)
-        disableWinChecker.current = false
+        checkWin.current = false
         const newBoard = [...board]
         newBoard[index] = symbol
         
         setBoard(newBoard)
         
-        const  currentPlayerMoves = [...playersMoves[currentPlayer]]
-        const lastMove = currentPlayerMoves.shift()
-        currentPlayerMoves.push(index)
-        if(lastMove !== null)
-          newBoard[lastMove] = null
+        const playerTracker = {...tracker[currentPlayer]}
+        let oldestIndx = Object.keys(playerTracker)[0]
 
-        const newPlayersMoves = {...playersMoves, [currentPlayer]: currentPlayerMoves }
-        if(settings.limited)
-          setPlayersMoves(newPlayersMoves)
+        playerTracker[` ${index}`] = playerTracker[oldestIndx]
+        delete playerTracker[oldestIndx]
 
-        if(settings.history){
+        oldestIndx = parseInt(oldestIndx) // ' oldestIndx' str -> oldestIndx int
+
+        if(oldestIndx > -1)
+          newBoard[oldestIndx] = null
+
+        const newtracker = {...tracker, [currentPlayer]: playerTracker }
+        if(isLimited)
+          setTacker(newtracker)
+
+        if(isHistory){
           const newHistoryItem = {board: newBoard, currentPlayer, isDisabled: false, position: index }
-          if(settings.limited)
-            newHistoryItem["playersMoves"] = newPlayersMoves
+          if(isLimited)
+            newHistoryItem["tracker"] = newtracker
 
           const newHistory = [...history.slice(0, offset+1), newHistoryItem]
           setHistory(newHistory)
           setOffset(newHistory.length - 1)
         }
+        clickSound.play()
       }
       else
-        audio = new Audio(errorClick)
-      audio.play()
+        errorSound.play()
     }
   }
 
-  function isEqual(testItem, item){
-    return !!testItem && testItem === item
-  }
-
-  function checkWinner(currentBoard){
-    let isRow = true, isColumn = true
-    let isDiagnolRight = true, isDiagnolLeft = true
+  function checkWinner(currentBoard) {
     const size = Math.sqrt(currentBoard.length)
-    let line = []
-    const vboard = []
-    
-    for(let i = 0; i < currentBoard.length; i += size){
+    let isRow = true, isColumn = true
+    let isDiagonalRight = true, isDiagonalLeft = true
+    const isEqual = (itemOne, itemTwo) => !!itemOne && itemOne === itemTwo
+  
+    for (let i = 0; i < size; i++) {
       isRow = true
       isColumn = true
-
-      for(let j = i; j < i + size; j++){
-        if(isRow && !isEqual(currentBoard[i], currentBoard[j]))
+  
+      for (let j = 0; j < size; j++) {
+        if (isRow && !isEqual(currentBoard[i * size], currentBoard[i * size + j]))
           isRow = false
-        if(isColumn && !isEqual(currentBoard[i / size], currentBoard[(j-i)*size + i / size]))
-          isColumn = false
-        if(isDiagnolRight && !(j % (size+1)) && !isEqual(currentBoard[0], currentBoard[j]))
-          isDiagnolRight = false
-        if(isDiagnolLeft && (j !== 0 && j !== (size*size-1)) && !(j % (size-1)) && !isEqual(currentBoard[size-1], currentBoard[j]))
-          isDiagnolLeft = false
         
+        if (isColumn && !isEqual(currentBoard[i], currentBoard[j * size + i]))
+          isColumn = false
       }
-
-      if(isRow || isColumn)
-        break;
+  
+      if (isRow || isColumn)
+        return true
+  
+      if (isDiagonalRight && !isEqual(currentBoard[0], currentBoard[i * size + i]))
+        isDiagonalRight = false
+  
+      if (isDiagonalLeft && !isEqual(currentBoard[size - 1], currentBoard[(i + 1) * size - 1 - i])) 
+        isDiagonalLeft = false
     }
-
-    for(let i = 0; i < currentBoard.length; i += size){
-      for(let j = i; j < i + size; j++){
-        line.push(currentBoard[j])
-      }
-      vboard.push(line)
-      line = []
-    }
-
-    console.log(vboard)
-    return isRow || isColumn || isDiagnolRight || isDiagnolLeft
+  
+    return isDiagonalRight || isDiagonalLeft
   }
+  
 
-  useMemo(() => {
-    function bestMove(){
+  useEffect(() => {
+    function compPlay(){
       const newBoard = [...board]
-      const counter = newBoard.filter(square => square === "O").length
+      let bestScore = -Infinity, bestMove = null
+      let alpha = -Infinity, beta = Infinity
+
+      for(let i = 0; i < newBoard.length; i++){
+        if(!newBoard[i]){
+          newBoard[i] = "O"
+          let score = minimax(newBoard, 2, alpha, beta, false)[0]
+          newBoard[i] = null
+          if (score > bestScore) {
+            bestScore = score
+            bestMove = i
+          }
+          alpha = Math.max(alpha, score)
+          if(beta <= alpha)
+            break
+        }
+      }
       
-      return counter > 1 ? minimax(newBoard, 0, true) : Math.floor(Math.random() * newBoard.length)
+      return bestMove
     }
 
-    // Add trecking to position
-    function minimax(currentBoard, depth, isMaximizing){
-      if(checkWinner(currentBoard)){
-        console.log("WINNER")
-        return isMaximizing ? 1 : -1
-      }
-      else if(!currentBoard.includes(null)){
-        console.log("DRAW")
-        return 0
-      }
+    function minimax(currentBoard, depth, alpha, beta, isMaximizing){
+      if(checkWinner(currentBoard) || depth === 0)
+        return isMaximizing ? [-1, null] : [1, null]
+
+      if(!currentBoard.includes(null))
+        return [0, null]
 
       if(isMaximizing){
         let bestScore = -Infinity
+        let bestMove = null
+
         for(let i = 0; i < currentBoard.length; i++){
           if(!currentBoard[i]){
             currentBoard[i] = "O"
-            let score = minimax(currentBoard, depth + 1, false)
+            let score = minimax(currentBoard, depth - 1, alpha, beta, false)[0]
             currentBoard[i] = null
-            bestScore = Math.max(bestScore, score)
+            if (score > bestScore) {
+              bestScore = score
+              bestMove = i
+            }
+            alpha = Math.max(alpha, score)
+            if(beta <= alpha)
+              break
           }
         }
-        return bestScore
+        return [bestScore, bestMove]
       }
       else{
         let bestScore = Infinity
+        let bestMove = null
+
         for(let i = 0; i < currentBoard.length; i++){
           if(!currentBoard[i]){
             currentBoard[i] = "X"
-            let score = minimax(currentBoard, depth + 1, true)
+            let score = minimax(currentBoard, depth - 1, alpha, beta, true)[0]
             currentBoard[i] = null
-            bestScore = Math.min(bestScore, score)
+            if (score < bestScore) {
+              bestScore = score
+              bestMove = i
+            }
+            beta = Math.min(beta, score)
+            if(beta <= alpha)
+              break
           }
         }
-        return bestScore
+        return [bestScore, bestMove]
       }
     }
 
-    if(!currentPlayer && settings.versus){
-      drawPlayer(bestMove())
-    }
+    if(!currentPlayer && isBot)
+      drawPlayer(compPlay())
+
     // eslint-disable-next-line
   }, [currentPlayer])
 
@@ -178,13 +204,13 @@ export default function Game({settings}){
         setGameStatus(status)
 
         setTimeout(() => {
-          disableWinChecker.current = true
+          checkWin.current = true
           setBoard(EMPTY_BOARD(size))
           setCurrentPlayer(true)
           setGameStatus(ON_GOING)
-          settings.limited && setPlayersMoves({ true: EMPTY_MOVES, false: EMPTY_MOVES })
-          if(settings.history){
-            setHistory(EMPTY_HISTORY(size))
+          isLimited && setTacker({ true: EMPTY_TRACKER(size, colorPalette), false: EMPTY_TRACKER(size, colorPalette) })
+          if(isHistory){
+            setHistory([history[0]])
             setOffset(0)
           }
           
@@ -201,13 +227,13 @@ export default function Game({settings}){
         changeGameStatus(ON_GOING)
     }
 
-    if(disableWinChecker.current){
-      disableWinChecker.current = false
+    if(checkWin.current){
+      checkWin.current = false
     }
     else
       isWon()
     // eslint-disable-next-line
-  },[board, settings])
+  },[board])
 
   const status =  gameStatus === WIN ? `${symbol} is the winner!` :
                   gameStatus === DRAW ? `Draw! there's no winners.` : `${symbol}'s Turn.`
@@ -217,9 +243,9 @@ export default function Game({settings}){
       <div className="game">
         <div>
           <h1 className="turn">{status}</h1>
-          <Board board={board} size={size} drawPlayer={drawPlayer}/>
+          <Board board={board} size={size} drawPlayer={drawPlayer} tracker={isLimited ? tracker : null}/>
         </div>
-        {settings.history && <History history={history} onRestore={onRestore}/>}
+        {isHistory && <History history={history} onRestore={onRestore} isBot={isBot}/>}
       </div>
     </>
   )

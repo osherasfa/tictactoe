@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;
+  margin: 3rem auto;
   
   max-width: 100rem;
 }
@@ -11,7 +11,21 @@
   width: 70vw;
   height: 100%;
   max-width: 30rem;
-  margin-block: 3rem 1rem;
+  margin-bottom: 1rem;
 }
 
 svg { color: var(--color); }
+
+.github-corner svg{
+  width: 20vw;
+  height: auto;
+  max-width: 10rem;
+}
+
+.github-corner:hover .octo-arm { animation: octocat-wave 560ms ease-in-out; }
+
+@keyframes octocat-wave {
+  0%, 100% { transform: rotate(0); }
+  20%, 60% { transform: rotate(-25deg); }
+  40%, 80% { transform: rotate(10deg); }
+}

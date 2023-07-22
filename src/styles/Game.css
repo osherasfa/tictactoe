@@ -7,7 +7,7 @@
   gap: 2em;
 }
 
-.turn {
+.turn{
   width: fit-content;
   margin: 0 auto;
   padding: 1em .5em;
@@ -19,10 +19,18 @@
 .return{
   align-self: flex-end;
   
-  border: var(--board-style);
   border-width: .15rem;
-  padding: .5rem;
+  padding: 1em;
+
+  color: var(--background);
+  background-color: var(--color);
 
   font-size: calc(var(--symbol-size)/4);
   margin-right: 2em;
- }
+}
+
+/* Inverted return button */
+.return:active{ 
+  background-color: var(--color-secondary);
+  color: var(--background); 
+}

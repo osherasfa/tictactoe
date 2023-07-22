@@ -4,12 +4,27 @@ import Game from "./components/Game"
 import Menu from "./components/Menu"
 import Logo from "./assets/images/Logo"
 import Click from "./assets/soundEffects/clickTwo.wav"
+import GithubRepo from "./assets/images/GithubRepo"
 
 const clickSound = new Audio(Click)
 
+const setLocalItem = (item, data) => localStorage.setItem(item, JSON.stringify(data))
+function getLocalStorage(item, defaultData){
+  const isValidItem = localStorage.getItem(item)
+  if(!isValidItem){
+    setLocalItem(item, defaultData)
+    return defaultData
+  }
+
+  return JSON.parse(isValidItem)
+}
+
+const localSettings = getLocalStorage('settings', {isBot: false, is4x4: true, isLimited: true, isHistory: false})
+const localTheme = getLocalStorage('theme', {background: "#000000", color: "#00ff00"})
+
 function App() {
-  const [ settings, setSettings ] = React.useState({on: false, gameOn: false, game:{versus: true, size: false, limited: true, history: true}})
-  const [ theme, setTheme ] = React.useState({ on: false, background: "#000000", color: "#00ff00"})
+  const [ settings, setSettings ] = React.useState({isSettings: false, isGame: false, game: localSettings})
+  const [ theme, setTheme ] = React.useState({ on: false, ...localTheme})
   const [ music, setMusic ] = React.useState(false)
 
   document.documentElement.style.setProperty('--color', theme.color)
@@ -21,8 +36,14 @@ function App() {
   }
 
   const toggleGame = () => {
-    setSettings({...settings, gameOn: !settings.gameOn, on: false})
+    const localTheme = {...theme}
+
+    setSettings({...settings, isGame: !settings.isGame, on: false})
     setTheme({...theme, on:false})
+    
+    delete localTheme.on
+    setLocalItem('theme', localTheme)
+    setLocalItem('settings', settings.game)
   }
   const toggleSettings = () => setSettings({...settings, on: !settings.on})
   const toggleGameSettings = (type, mode) => setSettings({...settings, game: {...settings.game, [type]: mode}})
@@ -34,9 +55,10 @@ function App() {
 
   return (
     <div className="App">
-        <Logo className="logo button" onClick={() => settings.gameOn && setSettings({...settings, gameOn: false})}/>
-        {settings.gameOn 
-          ? <Game settings={{...settings.game, size: settings.game.size ? 4 : 3, return: toggleGame}}/> 
+        <a target="_blank" rel="noopener noreferrer" href="https://github.com/osherasfa" className="github-corner"><GithubRepo/></a>
+        <Logo className="logo button" onClick={() => settings.isGame && setSettings({...settings, isGame: false})}/>
+        {settings.isGame 
+          ? <Game settings={{...settings.game, size: settings.game.is4x4 ? 4 : 3, return: toggleGame, color: theme.color}}/> 
           : <Menu
               theme={{...theme, open: toggleTheme, change: toggleColor}}
               music={{isOn: music, play: toggleMusic}}
@@ -44,9 +66,7 @@ function App() {
             />
         }
     </div>
-  );
+  )
 }
 
 export default App;
-
-// https://emu.edu/gaming-hub/tic-tac-toe

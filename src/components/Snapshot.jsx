@@ -1,5 +1,5 @@
 export default function Snapshot(snapshot){ 
-  const { index, currentPlayer, isDisabled, position, onRestore } = snapshot
+  const { index, currentPlayer, isDisabled, position, onRestore, isBot } = snapshot
   const symbol = currentPlayer ? "X" : "O"
   const move = !index ? `game start` : `${symbol} move ${convert2D(position)}`
   const disableClass = isDisabled ? " disabled" : ""
@@ -10,9 +10,5 @@ export default function Snapshot(snapshot){
     return `[${x + 1}, ${y + 1}]`
   }
 
-  return(
-    <div className={`snapshot${disableClass} button`} id={index} onClick={() => onRestore(snapshot)}>{`#${index}: ${move}`}</div>
-  )
+  return <div className={`snapshot${disableClass}${isBot ? "" : " button"}`} id={index} onClick={() => isBot ? null : onRestore(snapshot)}>{`#${index}: ${move}`}</div>
 }
-
-Snapshot.defaultProps = { isDisabled: false }

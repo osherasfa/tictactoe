@@ -8,7 +8,7 @@
 
 h1, h5, h6{ margin: 0rem; }
 
-.menu div div{ margin-top: .5rem; }
+.game-options, .color-picker{ margin-block: -1.5rem; }
 
 .game-options label{
   display: flex;
@@ -23,9 +23,7 @@ h1, h5, h6{ margin: 0rem; }
   padding: .5rem;
 }
 
-.game-options h6:first-child{
-  margin-inline: .5rem 2rem;
-}
+.game-options h6:first-child{ margin-inline: .5rem 2rem; }
 
 .color-picker{
   display: flex;
@@ -56,3 +54,5 @@ h1, h5, h6{ margin: 0rem; }
   align-items: center;
   gap: 1rem;
 }
+
+.links a{ color: currentColor; }

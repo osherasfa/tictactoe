@@ -1,6 +1,5 @@
-.history{
-  font-size: var(--history-size);
-}
+.history{ font-size: var(--history-size); }
+.history svg { width: 1.7rem; }
 
 .title{
   display: table;
@@ -16,8 +15,6 @@
   gap: 1em;
   margin: 2em;
 }
-
-.history svg { width: 1.7rem; }
 
 .container {
   display: flex;

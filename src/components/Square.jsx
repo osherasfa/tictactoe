@@ -1,6 +1,3 @@
-export default function Square({ index, symbol, drawPlayer}){
-
-  return(
-    <div className="square" onClick={() => drawPlayer(index)}>{symbol}</div>
-  )
+export default function Square({ index, symbol, drawPlayer, color}){
+  return <div className="square" style={{color}} onClick={() => drawPlayer(index)}>{symbol}</div>
 }
