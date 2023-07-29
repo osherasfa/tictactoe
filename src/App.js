@@ -55,8 +55,8 @@ function App() {
 
   return (
     <div className="App">
-        <a target="_blank" rel="noopener noreferrer" href="https://github.com/osherasfa" className="github-corner"><GithubRepo/></a>
-        <Logo className="logo button" onClick={() => settings.isGame && setSettings({...settings, isGame: false})}/>
+        <a target="_blank" rel="noopener noreferrer" href="https://github.com/osherasfa/tictactoe" className="github-corner"><GithubRepo/></a>
+        <a href="/"><Logo className="logo button" onClick={() => settings.isGame && setSettings({...settings, isGame: false})}/></a>
         {settings.isGame 
           ? <Game settings={{...settings.game, size: settings.game.is4x4 ? 4 : 3, return: toggleGame, color: theme.color}}/> 
           : <Menu

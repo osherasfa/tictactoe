@@ -188,8 +188,19 @@ export default function Game({settings}){
       }
     }
 
-    if(!currentPlayer && isBot)
-      drawPlayer(compPlay())
+    if(!currentPlayer && isBot){
+      let index
+      if(!board.includes('O')){
+        do {
+          console.log(board.length)
+          index = Math.floor(Math.random() * board.length)
+        } while (board[index] !== null)
+      }
+      else
+        index = compPlay()
+
+      drawPlayer(index)
+    }
 
     // eslint-disable-next-line
   }, [currentPlayer])
